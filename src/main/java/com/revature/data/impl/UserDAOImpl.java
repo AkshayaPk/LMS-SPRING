@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,11 +13,13 @@ import com.revature.data.access.exception.DataAccessException;
 import com.revature.data.exception.DataServiceException;
 import com.revature.data.utils.DataUtils;
 import com.revature.model.User;
+import com.revature.util.ConnectionUtil;
 
 @Transactional
 @Repository
 public class UserDAOImpl{
 	private static Logger logger = Logger.getLogger(UserDAOImpl.class);
+	private JdbcTemplate jdbcTemplate=ConnectionUtil.getJdbcTemplate();
 	@Autowired
 	private DataRetriver dataRetriver;
 
@@ -53,21 +56,30 @@ public class UserDAOImpl{
 		}
 		return categories;
 	}
-	public List<User> validateLogin(User user) throws DataServiceException{
-		List<User> list=null;
+	public boolean validateLogin(User user) throws DataServiceException{
 		try {
-			StringBuilder sb = new StringBuilder("select * from users where EMAIL_ID='"+user.getEmailId()+"'");
-			list=dataRetriver.retrieveBySQL(sb.toString());
+			String sb ="select id,password from users where EMAIL_ID=?";
+			Object[] params={user.getEmailId()};
 			
-			
-			
-			logger.info("Categories data retrieval success..");
+			dataRetriver.retrieveBySQL(sb.toString());
+			User user1=jdbcTemplate.queryForObject(sb,params,(rs,rowNum)->
+			{
+				User u=new User();
+
+				u.setId(rs.getInt("ID"));
+				u.setPassword(rs.getString("PASSWORD"));
+				return u;
+			});
+			if(user.getPassword().equals(user1.getPassword()))
+			{
+				return true;
+			}
 		} catch (DataAccessException e) {
 			logger.error(e.getMessage(), e);
 			System.out.println(e);
 			throw new DataServiceException(DataUtils.getPropertyMessage("data_retrieval_fail"), e);
 		}
-		return list;
+		return false;
 	}
 	
 	

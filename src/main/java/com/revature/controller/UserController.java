@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,7 @@ import com.revature.controller.exception.InternalException;
 import com.revature.data.impl.UserDAOImpl;
 import com.revature.model.User;
 
-@RestController
+@Controller
 @RequestMapping("/users")
 public class UserController {
 
@@ -41,19 +42,25 @@ public class UserController {
 	}
 	
 	@PostMapping("/login")
-	public List<User> validateLoginController(@RequestParam("email") String email,@RequestParam("password") String password) {
+	public String validateLoginController(@RequestParam("email") String email,@RequestParam("password") String password) {
 		try {
 			logger.info("Getting the categories data...");
 			User u=new User();
 			u.setEmailId(email);
 			u.setPassword(password);
 //			categories = categoryService.list();
-			return user.validateLogin(u);
+			boolean use= user.validateLogin(u);
+			System.out.println(use);
+			if(use==true)
+			{
+				return "redirect:../holidays.html";
+			}
 //			logger.info("categories data retrieval success.");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			System.out.println(e);
 			throw new InternalException("System has some issue...", e);
 		}
+		return "redirect:/index.html";
 	}
 }

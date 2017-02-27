@@ -58,11 +58,9 @@ public class UserDAOImpl{
 		try {
 			StringBuilder sb = new StringBuilder("select * from users where EMAIL_ID='"+user.getEmailId()+"'");
 			list=dataRetriver.retrieveBySQL(sb.toString());
-			System.out.println(list.get(0));
-//			use=(User)list;
-//			if(u.getPassword().equals(user.getPassword())){
-//				isValid=true;
-//			}
+			
+			
+			
 			logger.info("Categories data retrieval success..");
 		} catch (DataAccessException e) {
 			logger.error(e.getMessage(), e);

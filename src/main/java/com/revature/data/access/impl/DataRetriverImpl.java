@@ -3,7 +3,6 @@ package com.revature.data.access.impl;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,13 +15,13 @@ public class DataRetriverImpl implements DataRetriver {
 
 	private static Logger logger = Logger.getLogger(DataRetriverImpl.class);
 
-	@Autowired
-	private SessionFactory sessionFactory;
+	
 
 	public <E> List<E> retrieveBySQL(String queryString) throws DataAccessException {
 		List<E> list = null;
 		try {
-			list = sessionFactory.getCurrentSession().createSQLQuery(queryString).list();
+			
+			
 			logger.info("data retrieval success..");
 		} catch (Exception e) {
 			System.out.println("Retreiver exception");
